@@ -1,4 +1,12 @@
 @import "tailwindcss";
- @plugin "daisyui" {
-   themes: night --default;
- }
+@plugin "daisyui" {
+  themes: night --default;
+}
+@font-face {
+  font-family: 'Montserrat Alternates';
+  src: url('../public/assets/fonts/montserrat-alternates-medium/montserrat-alternates-medium.ttf') format('truetype');
+}
+
+@theme {
+  --font-montserrat-alternates: 'Montserrat Alternates', sans-serif;
+}
