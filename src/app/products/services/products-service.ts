@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ProductResponseInterface } from '@products/interfaces/product-response-interface';
-import { Observable, tap } from 'rxjs';
-import { environment } from 'src/environments/environment.development';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 interface Options {
   limit?: number,
@@ -26,6 +26,16 @@ export class ProductsService {
                .pipe(
                 tap( (resp) => console.log(resp))
                );
+  }
+
+  getProductImage(image_id: string) {
+    return this.httpClient.get(`${environment.API_BASE_URL}/files/product/${image_id}`, { responseType: 'blob' }).pipe(
+      map( resp => URL.createObjectURL(resp)),
+      catchError(error => {
+        console.log('Something went wrong in service.getProductImage: ', error);
+        return of(null);
+      })
+    );
   }
 
 }
