@@ -9,12 +9,18 @@ export class ProductImagePipe implements PipeTransform {
 
   productService = inject(ProductsService);
 
-  transform(images: Array<string>) {
+  transform(value: string | string[]) {
 
-    if(images.length > 0) {
+    // When the user only send one image
+    if(typeof value === 'string') {
+      return this.productService.getProductImage(value);
+    }
 
-      return this.productService.getProductImage(images[0]);
+    // When the user send an array of images
+    const image = value.at(0);
 
+    if(image) {
+      return this.productService.getProductImage(image);
     } else {
       return of('./assets/images/no-image.jpg');
     }
