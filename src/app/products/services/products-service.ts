@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { ProductResponseInterface } from '@products/interfaces/product-response-interface';
+import { Product, ProductResponseInterface } from '@products/interfaces/product-response-interface';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -36,6 +36,15 @@ export class ProductsService {
         return of(null);
       })
     );
+  }
+
+  getProductBySlug(slug: string): Observable<Product>{
+    return this.httpClient.get<Product>(`${environment.API_BASE_URL}/products/${slug}`).pipe(
+      catchError((error) => {
+        console.log('Something went wrong in service.getProductBySlug: ', error);
+        return of(error)
+      })
+    )
   }
 
 }
