@@ -3,7 +3,7 @@
     <img [src]="product().images | productImagePipe | async" [alt]="product().title"/>
   </figure>
   <div class="card-body">
-    <h2 class="card-title">{{ product().title | slice: 0:20 }} </h2>
+    <h2 class="card-title font-montserrat-alternates text-accent text-lg hover:underline cursor-pointer" [routerLink]="['product', product().slug]">{{ product().title | slice: 0:20 }} </h2>
     <p>{{product().description | slice: 0:70}}</p>
     <div class="card-actions justify-end">
       <a class="link link-accent" [routerLink]="['/product', product().slug]" >Show more</a>
