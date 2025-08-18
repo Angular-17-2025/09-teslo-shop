@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { ProductCard } from "../../../products/components/product-card/product-card";
 import { ProductsService } from '@products/services/products-service';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ProductResponseInterface } from '@products/interfaces/product-response-interface';
 import { map } from 'rxjs';
 import { Pagination } from "src/app/shared/pagination/pagination";
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -15,8 +16,19 @@ import { Pagination } from "src/app/shared/pagination/pagination";
 export class HomePage {
 
   products = signal<ProductResponseInterface | null>(null);
-
   productsService = inject(ProductsService);
+  route = inject(ActivatedRoute);
+
+  currentPageFromURL = toSignal(
+    this.route.queryParamMap.pipe(
+      // When you add "+" to any property, it become in a number
+      map((params) => (params.get('page') ? +params.get('page')! : 1)),
+      map((page) => (isNaN(page) ? 1 : page))
+    ),
+    {
+      initialValue: 1
+    }
+  );
 
   productsResource = rxResource({
     stream: () => this.productsService.getProducts({}).pipe(
