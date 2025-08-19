@@ -31,7 +31,8 @@ export class HomePage {
   );
 
   productsResource = rxResource({
-    stream: () => this.productsService.getProducts({offset: ( this.currentPageFromURL() -1 ) * 9}).pipe(
+    params: () => ({ page: this.currentPageFromURL() - 1 }),
+    stream: ({params}) => this.productsService.getProducts({ offset: params.page * 9 }).pipe(
       map((resp) => this.products.set(resp))
     )
   });
