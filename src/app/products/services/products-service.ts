@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 interface Options {
   limit?: number,
   gender?: string,
-  offset?: string
+  offset?: number
 }
 
 @Injectable({
