@@ -8,3 +8,7 @@
   }
 
 </div>
+
+@if (productGenderResource.hasValue()) {
+  <app-pagination [totalPages]="productGenderResource.value()!.pages" [currentPage]="paginationService.pageNumberFromURL()" />
+}

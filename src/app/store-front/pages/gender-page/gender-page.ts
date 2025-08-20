@@ -1,14 +1,16 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { Component, inject } from '@angular/core';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { ProductCard } from "@products/components/product-card/product-card";
 import { ProductsService } from '@products/services/products-service';
-import { map, switchMap } from 'rxjs';
+import { map } from 'rxjs';
+import { Pagination } from "src/app/shared/pagination/pagination";
+import { PaginationService } from 'src/app/shared/pagination/pagination-service';
 
 @Component({
   selector: 'app-gender-page',
-  imports: [ProductCard, TitleCasePipe],
+  imports: [ProductCard, TitleCasePipe, Pagination],
   templateUrl: './gender-page.html',
   styles: ``
 })
@@ -16,13 +18,17 @@ export class GenderPage {
 
   route = inject(ActivatedRoute);
   productsService = inject(ProductsService);
-  gender = signal<string>('');
+  paginationService = inject(PaginationService);
+
+  gender = toSignal(
+    this.route.params.pipe(
+      map(({gender}) => gender)
+    )
+  );
 
   productGenderResource = rxResource({
-    stream: () => this.route.paramMap.pipe(
-      map((params) => this.gender.set(params.get('gender')!)),
-      switchMap(() => this.productsService.getProducts({ gender: this.gender() }))
-    )
+    params: () => ({ gender: this.gender(), page: this.paginationService.pageNumberFromURL() -1 }),
+    stream: ({params}) => this.productsService.getProducts({ gender: params.gender, offset: params.page * 9 })
   });
 
 }
