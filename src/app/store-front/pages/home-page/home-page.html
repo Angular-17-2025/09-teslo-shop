@@ -1,7 +1,7 @@
 <h1 class="text-3xl font-bold font-montserrat-alternates">All products</h1>
 <h2 class="text-xl mb-5">For all tastes</h2>
 
-<app-pagination [totalPages]="products()?.pages ?? 0" [currentPage]="currentPageFromURL()"/>
+<app-pagination [totalPages]="products()?.pages ?? 0" [currentPage]="paginationService.pageNumberFromURL()"/>
 
 <div class=" grid grid-cols1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
 
