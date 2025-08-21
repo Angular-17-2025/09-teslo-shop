@@ -16,15 +16,27 @@ interface Options {
 export class ProductsService {
 
   httpClient = inject(HttpClient);
+  productsCache = new Map<string, ProductResponseInterface>();
+  ProductCache = new Map();
 
   getProducts(options: Options): Observable<ProductResponseInterface> {
 
     //Object destructuring
     const { limit = 9, gender = '', offset = 0} = options;
 
+    // Create the key to set indentifier to the cache of products to storage
+    const keyCache = `${limit}-${offset}-${gender}`;
+
+    // If productsCache map has the key, return from cache and avoid call the API
+    if(this.productsCache.has(keyCache)) {
+      console.log('Return products from cache');
+      return of(this.productsCache.get(keyCache)!);
+    }
+
     return this.httpClient.get<ProductResponseInterface>(`${environment.API_BASE_URL}/products`, { params: {limit, gender, offset} })
                .pipe(
-                tap( (resp) => console.log(resp))
+                tap( (resp) => console.log(resp)),
+                tap( (resp) => this.productsCache.set(keyCache, resp)) // Set the key and as value the resp
                );
   }
 
