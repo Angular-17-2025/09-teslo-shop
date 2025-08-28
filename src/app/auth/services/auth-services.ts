@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
+import { LoginResponseInterface } from '@auth/interfaces/login-response.interface';
 import { UserInterface } from '@auth/interfaces/user.interface';
+import { catchError, of, tap } from 'rxjs';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 
@@ -13,7 +15,7 @@ export class AuthServices {
   private _user = signal<UserInterface | null>(null);
   private _token = signal<string | null>(null);
 
-  private http = inject(HttpClient);
+  private _http = inject(HttpClient);
 
   authStatus = computed<AuthStatus>(() => {
     if(this._authStatus() === 'checking') return 'checking';
@@ -25,5 +27,21 @@ export class AuthServices {
 
   user = computed(() => this._user());
   token = computed(() => this._token());
+
+  login(email: string, password: string){
+    return this._http.post<LoginResponseInterface>('http://localhost:3000/api/auth/login', { email, password }).pipe(
+      tap(resp => {
+        this._user.set(resp.user);
+        this._authStatus.set('authenticated');
+        this._token.set(resp.token);
+
+        localStorage.setItem('token', resp.token);
+      }),
+      catchError((error) => {
+        console.log(error);
+        return of();
+      })
+    );
+  }
 
 }

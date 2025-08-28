@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthServices } from '@auth/services/auth-services';
 
 @Component({
   selector: 'app-login-page',
@@ -12,6 +13,7 @@ export class LoginPage {
 
   fb = inject(FormBuilder);
   formSubmited = signal<Boolean>(false);
+  authService = inject(AuthServices);
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -20,9 +22,12 @@ export class LoginPage {
 
   login(){
     this.formSubmited.set(true);
-    if(this.loginForm.invalid){
-      return ;
-    }
+    if(this.loginForm.invalid) return ;
+    const {email, password} = this.loginForm.value;
+    this.authService.login(email!, password!).subscribe({
+      next: (resp) => console.log(resp),
+      error: (error) => console.log(error)
+    });
   }
 
   getControlErrors(control_name: string, display_name: string): string[] {
