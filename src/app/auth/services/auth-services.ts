@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { LoginResponseInterface } from '@auth/interfaces/login-response.interface';
 import { UserInterface } from '@auth/interfaces/user.interface';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 
@@ -28,7 +28,7 @@ export class AuthServices {
   user = computed(() => this._user());
   token = computed(() => this._token());
 
-  login(email: string, password: string){
+  login(email: string, password: string): Observable<boolean>{
     return this._http.post<LoginResponseInterface>('http://localhost:3000/api/auth/login', { email, password }).pipe(
       tap(resp => {
         this._user.set(resp.user);
@@ -37,9 +37,14 @@ export class AuthServices {
 
         localStorage.setItem('token', resp.token);
       }),
+      map(() => true),
       catchError((error) => {
         console.log(error);
-        return of();
+        this._user.set(null);
+        this._token.set(null);
+        this._authStatus.set('not-authenticated');
+        localStorage.removeItem('token');
+        return of(error);
       })
     );
   }
