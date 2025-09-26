@@ -15,7 +15,7 @@ export class AuthServices {
 
   private _authStatus = signal<AuthStatus>('checking');
   private _user = signal<UserInterface | null>(null);
-  private _token = signal<string | null>(null);
+  private _token = signal<string | null>(localStorage.getItem('token'));
 
   private _http = inject(HttpClient);
 
@@ -54,7 +54,7 @@ export class AuthServices {
 
     return this._http.get<LoginResponseInterface>(`${this.API_BASE_URL}/auth/check-status`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        // Authorization: `Bearer ${token}`
       }
     }).pipe(
       map((resp) => this.handleSuccess(resp)),
