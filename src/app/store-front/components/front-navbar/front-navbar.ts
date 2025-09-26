@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthServices } from '@auth/services/auth-services';
 
 @Component({
   selector: 'app-front-navbar',
@@ -8,5 +9,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styles: ``
 })
 export class FrontNavbar {
+
+  authService = inject(AuthServices);
 
 }
