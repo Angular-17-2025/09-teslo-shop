@@ -38,22 +38,8 @@ export class AuthServices {
 
   login(email: string, password: string): Observable<boolean>{
     return this._http.post<LoginResponseInterface>('http://localhost:3000/api/auth/login', { email, password }).pipe(
-      tap(resp => {
-        this._user.set(resp.user);
-        this._authStatus.set('authenticated');
-        this._token.set(resp.token);
-
-        localStorage.setItem('token', resp.token);
-      }),
-      map(() => true),
-      catchError((error) => {
-        console.log(error);
-        this._user.set(null);
-        this._token.set(null);
-        this._authStatus.set('not-authenticated');
-        localStorage.removeItem('token');
-        return of(error);
-      })
+      map((resp) => this.handleSuccess(resp)),
+      catchError((error) => this.handleError(error))
     );
   }
 
@@ -62,6 +48,7 @@ export class AuthServices {
     let token = localStorage.getItem('token');
 
     if(!token) {
+      this.logout();
       return of(false);
     }
 
@@ -70,23 +57,33 @@ export class AuthServices {
         Authorization: `Bearer ${token}`
       }
     }).pipe(
-      tap(resp => {
-        this._user.set(resp.user);
-        this._authStatus.set('authenticated');
-        this._token.set(resp.token);
-
-        localStorage.setItem('token', resp.token);
-      }),
-      map(() => true),
-      catchError((error) => {
-        console.log(error);
-        this._user.set(null);
-        this._token.set(null);
-        this._authStatus.set('not-authenticated');
-        localStorage.removeItem('token');
-        return of(error);
-      })
+      map((resp) => this.handleSuccess(resp)),
+      catchError((error) => this.handleError(error))
     );
+  }
+
+  logout(){
+    this._user.set(null);
+    this._token.set(null);
+    this._authStatus.set('not-authenticated');
+
+    localStorage.removeItem('token');
+  }
+
+  private handleSuccess({token, user}: LoginResponseInterface) {
+
+    this._user.set(user);
+    this._authStatus.set('authenticated');
+    this._token.set(token);
+    localStorage.setItem('token', token);
+    return true;
+  }
+
+  private handleError(error: any) {
+
+    console.log(error);
+    this.logout();
+    return of(false);
   }
 
 }
