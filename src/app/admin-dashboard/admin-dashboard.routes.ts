@@ -10,7 +10,7 @@ export const AdminDashboardRoutes: Routes = [
         loadComponent: () => import('./pages/admin-products/admin-products').then(m => m.AdminProducts)
       },
       {
-        path: 'product:/id',
+        path: 'product/:id',
         loadComponent: () => import('./pages/admin-product/admin-product').then(m => m.AdminProduct)
       },
       {
