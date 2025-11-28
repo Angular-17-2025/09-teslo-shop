@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UserInterface } from '@auth/interfaces/user.interface';
-import { catchError, map, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, shareReplay } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
@@ -18,23 +18,17 @@ export class AuthServices {
   private _token = signal<string | null>(localStorage.getItem('token'));
 
   private _http = inject(HttpClient);
-
   private API_BASE_URL = environment.API_BASE_URL;
+
+  private _checkLoginStatus$?: Observable<boolean>;
+
+  authStatus = computed<AuthStatus>(() => this._authStatus());
+  user = computed(() => this._user());
+  token = computed(() => this._token());
 
   checkStatus = rxResource({
     stream: () => this.checkLoginstatus()
   });
-
-  authStatus = computed<AuthStatus>(() => {
-    if(this._authStatus() === 'checking') return 'checking';
-
-    if(this._user()) return 'authenticated'
-
-    return 'not-authenticated'
-  });
-
-  user = computed(() => this._user());
-  token = computed(() => this._token());
 
   login(email: string, password: string): Observable<boolean>{
     return this._http.post<LoginResponseInterface>('http://localhost:3000/api/auth/login', { email, password }).pipe(
@@ -45,21 +39,27 @@ export class AuthServices {
 
   checkLoginstatus(): Observable<boolean>{
 
-    let token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    const lifeToken = localStorage.getItem('cicle');
+    const expToken = lifeToken ? Number(lifeToken) : 0;
 
-    if(!token) {
+    if(!token || !expToken || Date.now() > expToken) {
       this.logout();
       return of(false);
     }
 
-    return this._http.get<LoginResponseInterface>(`${this.API_BASE_URL}/auth/check-status`, {
-      headers: {
-        // Authorization: `Bearer ${token}`
-      }
-    }).pipe(
-      map((resp) => this.handleSuccess(resp)),
-      catchError((error) => this.handleError(error))
-    );
+    if(!this._checkLoginStatus$) {
+      this._checkLoginStatus$ = this._http.get<LoginResponseInterface>(`${this.API_BASE_URL}/auth/check-status`, {
+        headers: {
+          // Authorization: `Bearer ${token}`
+        }
+      }).pipe(
+        map((resp) => this.handleSuccess(resp)),
+        catchError((error) => this.handleError(error)),
+        shareReplay(1)
+      );
+    }
+    return this._checkLoginStatus$;
   }
 
   logout(){
@@ -67,20 +67,25 @@ export class AuthServices {
     this._token.set(null);
     this._authStatus.set('not-authenticated');
 
+    this._checkLoginStatus$ = undefined;
+
     localStorage.removeItem('token');
+    localStorage.removeItem('cicle');
   }
 
   private handleSuccess({token, user}: LoginResponseInterface) {
-
     this._user.set(user);
     this._authStatus.set('authenticated');
     this._token.set(token);
+    const expiresInMs = 60 * 60 * 500; //30mins
+    const expTime = Date.now() + expiresInMs;
+
     localStorage.setItem('token', token);
+    localStorage.setItem('cicle', expTime.toString());
     return true;
   }
 
-  private handleError(error: any) {
-
+  private handleError(error: any): Observable<boolean> {
     console.log(error);
     this.logout();
     return of(false);
