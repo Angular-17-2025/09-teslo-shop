@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ProductsTable } from "@products/components/products-table/products-table";
 import { ProductResponseInterface } from '@products/interfaces/product-response-interface';
@@ -18,12 +18,18 @@ export class AdminProducts {
 
   private productsService = inject(ProductsService);
   readonly paginationService = inject(PaginationService);
-
+  productsPerPage = signal<number>(10);
   products = signal<ProductResponseInterface | null>(null);
 
   productsResource = rxResource({
-    params: () => ({page: this.paginationService.pageNumberFromURL() - 1}),
-    stream: ({params}) => this.productsService.getProducts({offset: params.page * 9}).pipe(
+    params: () => ({
+      page: this.paginationService.pageNumberFromURL() - 1,
+      limit: this.productsPerPage()
+    }),
+    stream: ({params}) => this.productsService.getProducts({
+      offset: params.page * 9,
+      limit: params.limit
+    }).pipe(
       map((resp) => this.products.set(resp))
     )
   });
