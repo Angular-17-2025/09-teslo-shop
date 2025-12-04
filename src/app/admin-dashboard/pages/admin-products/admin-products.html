@@ -1,1 +1,18 @@
-<p>admin-products works!</p>
+<h1 class="text-2xl font-bold">Products List</h1>
+<h3 class="text-lg">Total products <span class="text-accent">10</span></h3>
+
+<div class="divider"></div>
+
+@if (productsResource.status() == "resolved") {
+  @if (products()!.count! > 10) {
+    <app-pagination [totalPages]="products()!.pages" [currentPage]="paginationService.pageNumberFromURL()"></app-pagination>
+  }
+  @if (products()!.count > 0) {
+    <app-products-table [products]="products()!.products"></app-products-table>
+  } @else {
+    <span class="text-accent">No products</span>
+  }
+  @if (products()!.count! > 10) {
+    <app-pagination [totalPages]="products()!.pages" [currentPage]="paginationService.pageNumberFromURL()"></app-pagination>
+  }
+}
