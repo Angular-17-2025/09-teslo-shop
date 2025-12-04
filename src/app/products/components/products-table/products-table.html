@@ -32,7 +32,7 @@
                 </div>
               </div>
               <div>
-                <a [routerLink]="['/admin/product', product.id]" class="font-bold">{{product.title}}</a>
+                <a [routerLink]="['/admin/product', product.id]" class="font-bold hover:text-accent transition-colors duration-200">{{product.title}}</a>
                 <div class="text-sm opacity-50">{{product.sizes.join(', ')}}</div>
               </div>
             </div>
