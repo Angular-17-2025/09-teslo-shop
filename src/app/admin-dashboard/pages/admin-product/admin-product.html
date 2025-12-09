@@ -6,5 +6,5 @@
 }
 
 @if(productResource.hasValue()) {
-  {{productResource.value().description}}
+  <app-product-form [product]="productResource.value()" />
 }

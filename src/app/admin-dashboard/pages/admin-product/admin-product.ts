@@ -1,12 +1,13 @@
+import { Productform } from './../../components/product-form/product-form';
 import { Component, effect, inject } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductsService } from '@products/services/products-service';
-import { delay, map } from 'rxjs';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-admin-product',
-  imports: [],
+  imports: [Productform],
   templateUrl: './admin-product.html',
   styles: ``
 })
