@@ -14,7 +14,6 @@ export class FormErrorLabel {
 
   get errorMessage() {
     const errors: ValidationErrors = this.control().errors || {};
-    console.log("Errors: ", errors);
     return this.control().touched &&
            Object.keys(errors).length > 0
             ? FormUtils.getTextError(errors) //This comes from our custom FormUtils
