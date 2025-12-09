@@ -15,7 +15,7 @@ export class Productform  implements OnInit{
   product = input.required<Product>();
   formBuilder = inject(FormBuilder);
 
-  sizes = ['XS', 'SM', 'MD', 'L', 'XL', 'XLL'];
+  sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   productForm = this.formBuilder.group({
     title: ['', Validators.required],
@@ -36,6 +36,16 @@ export class Productform  implements OnInit{
   setFormValues(product: Partial<Product>) {
     this.productForm.reset(product as any);
     this.productForm.patchValue({tags: product.tags?.join(', ')});
+  }
+
+  clickSize(size: string) {
+    const productSizes = new Set(this.productForm.value.sizes ?? []);
+
+    productSizes.has(size) ? productSizes.delete(size) : productSizes.add(size);
+
+    const sizesSorted = this.sizesMap.filter(sizeMap => productSizes.has(sizeMap));
+
+    this.productForm.patchValue({sizes: sizesSorted});
   }
 
   submitForm() {
