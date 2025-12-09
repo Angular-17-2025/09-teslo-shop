@@ -59,4 +59,8 @@ export class ProductsService {
     )
   }
 
+  getProductByID(id: string): Observable<Product>{
+    return this.httpClient.get<Product>(`${environment.API_BASE_URL}/products/${id}`);
+  }
+
 }
