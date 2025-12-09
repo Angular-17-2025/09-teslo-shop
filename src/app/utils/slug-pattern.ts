@@ -24,32 +24,32 @@ export class FormUtils {
     for (const key of Object.keys(errors)) {
       switch (key) {
         case 'required':
-          return 'Este campo es requerido';
+          return 'This field is required.';
 
         case 'minlength':
-          return `Mínimo de ${errors['minlength'].requiredLength} caracteres.`;
+          return `The min characters is ${errors['minlength'].requiredLength}.`;
 
         case 'min':
-          return `Valor mínimo de ${errors['min'].min}`;
+          return `The min value must be ${errors['min'].min}`;
 
         case 'email':
-          return `El valor ingresado no es un correo electrónico`;
+          return `The value is not a valid email`;
 
         case 'emailTaken':
-          return `El correo electrónico ya está siendo usado por otro usuario`;
+          return `The email is already in use`;
 
         case 'noStrider':
-          return `No se puede usar el username de strider en la app`;
+          return `You can not use the name in the app`;
 
         case 'pattern':
           if (errors['pattern'].requiredPattern === FormUtils.emailPattern) {
-            return 'El valor ingresado no luce como un correo electrónico';
+            return 'The email must be a valid email';
           }
 
-          return 'Error de patrón contra expresión regular';
+          return 'Pettern error against regular expression';
 
         default:
-          return `Error de validación no controlado ${key}`;
+          return `Error ${key}`;
       }
     }
 

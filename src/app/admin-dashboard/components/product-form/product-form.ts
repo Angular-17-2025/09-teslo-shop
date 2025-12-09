@@ -3,10 +3,11 @@ import { Product } from '@products/interfaces/product-response-interface';
 import { ProductCarousel } from "@products/components/product-carousel/product-carousel";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '@utils/slug-pattern';
+import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
 
 @Component({
   selector: 'app-product-form',
-  imports: [ProductCarousel, ReactiveFormsModule],
+  imports: [ProductCarousel, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './product-form.html',
   styles: ``
 })
