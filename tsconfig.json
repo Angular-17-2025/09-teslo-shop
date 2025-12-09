@@ -8,7 +8,8 @@
       "@admin-dashboard/*": ["./src/app/admin-dashboard/*"],
       "@auth/*": ["./src/app/auth/*"],
       "@products/*": ["./src/app/products/*"],
-      "@store-front/*": ["./src/app/store-front/*"]
+      "@store-front/*": ["./src/app/store-front/*"],
+      "@utils/*": ["./src/app/utils/*"]
     },
     "strict": true,
     "noImplicitOverride": true,
