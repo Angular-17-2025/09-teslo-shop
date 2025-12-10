@@ -17,7 +17,6 @@ export class ProductsService {
 
   httpClient = inject(HttpClient);
   productsCache = new Map<string, ProductResponseInterface>();
-  ProductCache = new Map();
 
   getProducts(options: Options): Observable<ProductResponseInterface> {
 
@@ -65,11 +64,18 @@ export class ProductsService {
 
   updateProduct(productID: string, product: Partial<Product>): Observable<Product> {
     return this.httpClient.patch<Product>(`${environment.API_BASE_URL}/products/${productID}`, product).pipe(
+      tap((product) => this.updateCache(product)),
       catchError((error) => {
         console.log('Something went wronf in products-service.updateProduct: ', error);
         return of(error);
       })
     );
+  }
+
+  updateCache(updatedProduct: Partial<Product>) {
+    this.productsCache.forEach((productResponse) => {
+      productResponse.products = productResponse.products.map((oldProduct) => oldProduct.id == updatedProduct.id ? updatedProduct as any : oldProduct);
+    });
   }
 
 }
