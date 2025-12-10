@@ -23,6 +23,9 @@
   </div>
   <div class="navbar-end gap-4">
     @if ( authService.authStatus() === 'authenticated' ) {
+      @if(authService.user()?.roles?.includes('admin')) {
+        <a [routerLink]="['/admin']" class="btn btn-ghost">Admin panel</a>
+      }
       <button class="btn btn-ghost">{{ authService.user()?.fullName }}</button>
       <button class="btn btn-sm btn-error" (click)="authService.logout()">Logout</button>
     } @else if ( authService.authStatus() === "not-authenticated" ) {
