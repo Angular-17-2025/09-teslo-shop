@@ -2,7 +2,7 @@ import { Component, inject, input, OnInit } from '@angular/core';
 import { Product } from '@products/interfaces/product-response-interface';
 import { ProductCarousel } from "@products/components/product-carousel/product-carousel";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormUtils } from '@utils/slug-pattern';
+import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
 
 @Component({
