@@ -4,6 +4,7 @@ import { ProductCarousel } from "@products/components/product-carousel/product-c
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
+import { ProductsService } from '@products/services/products-service';
 
 @Component({
   selector: 'app-product-form',
@@ -15,6 +16,7 @@ export class Productform  implements OnInit{
 
   product = input.required<Product>();
   formBuilder = inject(FormBuilder);
+  productsService = inject(ProductsService);
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -64,6 +66,11 @@ export class Productform  implements OnInit{
     };
 
     console.log(formData);
+
+    this.productsService.updateProduct(this.product()?.id, formData).subscribe({
+      next: (resp) => console.log(resp),
+      error: (error) => console.log(error)
+    });
   }
 
 }

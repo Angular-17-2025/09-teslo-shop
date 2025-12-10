@@ -63,4 +63,13 @@ export class ProductsService {
     return this.httpClient.get<Product>(`${environment.API_BASE_URL}/products/${id}`);
   }
 
+  updateProduct(productID: string, product: Partial<Product>): Observable<Product> {
+    return this.httpClient.patch<Product>(`${environment.API_BASE_URL}/products/${productID}`, product).pipe(
+      catchError((error) => {
+        console.log('Something went wronf in products-service.updateProduct: ', error);
+        return of(error);
+      })
+    );
+  }
+
 }
