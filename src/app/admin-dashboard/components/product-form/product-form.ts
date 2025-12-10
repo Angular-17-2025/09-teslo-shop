@@ -50,7 +50,20 @@ export class Productform  implements OnInit{
   }
 
   submitForm() {
-    console.log(this.productForm.value);
+
+    this.productForm.markAllAsTouched();
+
+    if(this.productForm.invalid) return;
+
+    const formValue = this.productForm.value;
+
+    const formData: Partial<Product> = {
+      ... formValue as any,
+      //Convert in lowercase, split string by comma and trim blank spaces
+      tags: formValue.tags?.toLowerCase().split(',').map((tag) => tag.trim()) ?? []
+    };
+
+    console.log(formData);
   }
 
 }
