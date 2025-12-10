@@ -5,10 +5,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
 import { ProductsService } from '@products/services/products-service';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-product-form',
-  imports: [ProductCarousel, ReactiveFormsModule, FormErrorLabel],
+  imports: [ProductCarousel, ReactiveFormsModule, FormErrorLabel, RouterLink],
   templateUrl: './product-form.html',
   styles: ``
 })

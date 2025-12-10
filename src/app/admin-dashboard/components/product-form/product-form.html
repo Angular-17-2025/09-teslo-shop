@@ -1,4 +1,7 @@
-<h1 class="text-2xl font-bold">{{ product().title }}</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <h1 class="text-2xl font-bold">{{ product().title }}</h1>
+  <a [routerLink]="['/admin/products']" class="btn btn-sm btn-ghost">Regresar a productos</a>
+</div>
 <div class="divider"></div>
 
 <form [formGroup]="productForm" (submit)="submitForm()" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
