@@ -7,11 +7,11 @@ import { map } from 'rxjs';
 import { PaginationService } from 'src/app/shared/pagination/pagination-service';
 import { Pagination } from "src/app/shared/pagination/pagination";
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin-products',
-  imports: [ProductsTable, Pagination, FormsModule],
+  imports: [ProductsTable, Pagination, FormsModule, RouterLink],
   templateUrl: './admin-products.html',
   styles: ``
 })

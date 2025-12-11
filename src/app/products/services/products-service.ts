@@ -1,6 +1,7 @@
+import { UserInterface } from '@auth/interfaces/user.interface';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Product, ProductResponseInterface } from '@products/interfaces/product-response-interface';
+import { Gender, Product, ProductResponseInterface } from '@products/interfaces/product-response-interface';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -17,6 +18,19 @@ export class ProductsService {
 
   httpClient = inject(HttpClient);
   productsCache = new Map<string, ProductResponseInterface>();
+  emptyProduct: Product = {
+    id:          'new',
+    title:       '',
+    price:       0,
+    description: '',
+    slug:        '',
+    stock:       0,
+    sizes:       [],
+    gender:      Gender.Men,
+    tags:        [],
+    images:      [],
+    user:        {} as UserInterface,
+  }
 
   getProducts(options: Options): Observable<ProductResponseInterface> {
 
@@ -59,6 +73,11 @@ export class ProductsService {
   }
 
   getProductByID(id: string): Observable<Product>{
+
+    if(id == 'new') {
+      return of(this.emptyProduct);
+    }
+
     return this.httpClient.get<Product>(`${environment.API_BASE_URL}/products/${id}`);
   }
 
