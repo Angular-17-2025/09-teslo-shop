@@ -91,6 +91,12 @@ export class ProductsService {
     );
   }
 
+  createProduct(product: Partial<Product>): Observable<Product> {
+    return this.httpClient.post<Product>(`${environment.API_BASE_URL}/products`, product).pipe(
+      tap(() => this.productsCache.clear())
+    );
+  }
+
   updateCache(updatedProduct: Partial<Product>) {
     this.productsCache.forEach((productResponse) => {
       productResponse.products = productResponse.products.map((oldProduct) => oldProduct.id == updatedProduct.id ? updatedProduct as any : oldProduct);

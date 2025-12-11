@@ -5,7 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
 import { ProductsService } from '@products/services/products-service';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-product-form',
@@ -17,6 +17,7 @@ export class Productform  implements OnInit{
 
   product = input.required<Product>();
   formBuilder = inject(FormBuilder);
+  router = inject(Router);
   productsService = inject(ProductsService);
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -25,8 +26,8 @@ export class Productform  implements OnInit{
     title: ['', Validators.required],
     slug: ['', [Validators.required, Validators.pattern(FormUtils.slugPattern)]],
     description: ['', Validators.required],
-    price: [0, [Validators.required, Validators.min(0)]],
-    stock: [0, [Validators.required, Validators.min(0)]],
+    price: [0, [Validators.required, Validators.min(1)]],
+    stock: [0, [Validators.required, Validators.min(1)]],
     tags: [''],
     gender: ['men', [Validators.required, Validators.pattern(/men|women|kid|unisex/)]],
     sizes: [['']],
@@ -66,12 +67,20 @@ export class Productform  implements OnInit{
       tags: formValue.tags?.toLowerCase().split(',').map((tag) => tag.trim()) ?? []
     };
 
-    console.log(formData);
+    if(this.product().id == 'new') {
+      this.productsService.createProduct(formData).subscribe({
+        next: (product) => this.router.navigateByUrl('/admin/product/' + product.id),
+        error: (error) => console.log(error),
+        complete: () => console.log('Completed!')
+      });
 
-    this.productsService.updateProduct(this.product()?.id, formData).subscribe({
-      next: (resp) => console.log(resp),
-      error: (error) => console.log(error)
-    });
+    } else {
+      this.productsService.updateProduct(this.product()?.id, formData).subscribe({
+        next: (resp) => console.log('Update!'),
+        error: (error) => console.log(error)
+      });
+    }
+
   }
 
 }
