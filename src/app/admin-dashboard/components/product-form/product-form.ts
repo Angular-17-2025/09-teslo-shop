@@ -6,7 +6,6 @@ import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
 import { ProductsService } from '@products/services/products-service';
 import { Router, RouterLink } from "@angular/router";
-import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-product-form',
@@ -22,6 +21,7 @@ export class Productform  implements OnInit{
   productsService = inject(ProductsService);
   wasSaved = signal<boolean>(false);
   toastMsg = signal<string>("")
+  tempImages = signal<string[]>([]);
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -84,6 +84,18 @@ export class Productform  implements OnInit{
       });
     }
 
+  }
+
+  onImageInput(event: Event) {
+    //Extract array of images Types as HTMLInputElement to access all properties
+    const imagesSelected = (event.target as HTMLInputElement).files;
+
+    this.tempImages.set([]);
+
+    // Convert each image in a URL to display in HTLM code
+    this.tempImages.set(Array.from(imagesSelected ?? []).map((imageSelected) =>
+      URL.createObjectURL(imageSelected)
+    ));
   }
 
   launchToat(msg:string) {
