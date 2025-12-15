@@ -4,12 +4,18 @@
       <div class="swiper-slide">
         <img [src]="image | productImagePipe | async" [alt]="title()">
       </div>
+    } @empty{
+      <div class="swiper-slide">
+        <img [src]="'' | productImagePipe | async" [alt]="title()">
+      </div>
     }
   </div>
-  <div class="swiper-pagination"></div>
+  @if(images().length > 0) {
+    <div class="swiper-pagination"></div>
 
-  <div class="swiper-button-prev"></div>
-  <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
 
-  <div class="swiper-scrollbar"></div>
+    <div class="swiper-scrollbar"></div>
+  }
 </div>

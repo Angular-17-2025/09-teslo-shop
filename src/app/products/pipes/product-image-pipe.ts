@@ -11,6 +11,10 @@ export class ProductImagePipe implements PipeTransform {
 
   transform(value: string | string[]) {
 
+    if (value == '' ) {
+      return of('./assets/images/no-image.jpg');
+    }
+
     // When the user only send one image
     if(typeof value === 'string') {
       return this.productService.getProductImage(value);
