@@ -11,6 +11,12 @@ export class ProductImagePipe implements PipeTransform {
 
   transform(value: string | string[]) {
 
+    // Local images, created when user select new ones to upload
+    if(value.includes("blob")) {
+      return of(value);
+    }
+
+    // Display when is a new product
     if (value == '' ) {
       return of('./assets/images/no-image.jpg');
     }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, OnChanges, SimpleChanges, viewChild } from '@angular/core';
 import Swiper from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -18,19 +18,42 @@ import { AsyncPipe } from '@angular/common';
     }
   `
 })
-export class ProductCarousel implements AfterViewInit{
+export class ProductCarousel implements AfterViewInit, OnChanges{
 
   title = input.required<string>();
   images = input.required<string[]>();
   swiperDiv = viewChild.required<ElementRef>('swiperDiv');
+  swiperInstance: Swiper | undefined = undefined;
+
+  ngOnChanges(changes: SimpleChanges): void {
+
+    //If is the first change don't do anything
+    if(changes['images'].firstChange) return;
+
+    if(!this.swiperInstance) return;
+
+    this.swiperInstance.destroy(true, true);
+
+    //Clean the .swiper-pagination content
+    const paginationElement: HTMLDivElement = this.swiperDiv().nativeElement?.querySelector('.swiper-pagination');
+    paginationElement.innerHTML = '';
+
+    //Re-init Swiper
+    setTimeout(() => {
+      this.swiperInitFunc();
+    }, 300)
+  }
 
   ngAfterViewInit() {
+    this.swiperInitFunc();
+  }
 
+  swiperInitFunc() {
     const swiper = this.swiperDiv().nativeElement;
 
     if(!swiper) return;
 
-    new Swiper(swiper, {
+    this.swiperInstance = new Swiper(swiper, {
       // Optional parameters
       direction: 'horizontal',
       loop: true,
@@ -56,6 +79,5 @@ export class ProductCarousel implements AfterViewInit{
       },
     });
   }
-
 
 }

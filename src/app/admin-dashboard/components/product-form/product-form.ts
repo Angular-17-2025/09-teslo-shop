@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { Product } from '@products/interfaces/product-response-interface';
 import { ProductCarousel } from "@products/components/product-carousel/product-carousel";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -22,6 +22,9 @@ export class Productform  implements OnInit{
   wasSaved = signal<boolean>(false);
   toastMsg = signal<string>("")
   tempImages = signal<string[]>([]);
+  productImages = computed(() => {
+    return [...this.product().images, ...this.tempImages()]
+  });
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
