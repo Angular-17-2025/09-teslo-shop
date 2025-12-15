@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { Product } from '@products/interfaces/product-response-interface';
 import { ProductCarousel } from "@products/components/product-carousel/product-carousel";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -6,6 +6,7 @@ import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
 import { ProductsService } from '@products/services/products-service';
 import { Router, RouterLink } from "@angular/router";
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-product-form',
@@ -19,6 +20,8 @@ export class Productform  implements OnInit{
   formBuilder = inject(FormBuilder);
   router = inject(Router);
   productsService = inject(ProductsService);
+  wasSaved = signal<boolean>(false);
+  toastMsg = signal<string>("")
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -71,16 +74,25 @@ export class Productform  implements OnInit{
       this.productsService.createProduct(formData).subscribe({
         next: (product) => this.router.navigateByUrl('/admin/product/' + product.id),
         error: (error) => console.log(error),
-        complete: () => console.log('Completed!')
+        complete: () => this.launchToat("Product created successfully")
       });
 
     } else {
       this.productsService.updateProduct(this.product()?.id, formData).subscribe({
-        next: (resp) => console.log('Update!'),
+        next: () => this.launchToat("Product updated successfully"),
         error: (error) => console.log(error)
       });
     }
 
+  }
+
+  launchToat(msg:string) {
+    this.toastMsg.set(msg);
+    this.wasSaved.set(true);
+    setTimeout(() =>{
+      this.wasSaved.set(false);
+      this.toastMsg.set('');
+    }, 3000)
   }
 
 }
