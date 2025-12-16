@@ -34,10 +34,6 @@ export class ProductCarousel implements AfterViewInit, OnChanges{
 
     this.swiperInstance.destroy(true, true);
 
-    //Clean the .swiper-pagination content
-    const paginationElement: HTMLDivElement = this.swiperDiv().nativeElement?.querySelector('.swiper-pagination');
-    paginationElement.innerHTML = '';
-
     //Re-init Swiper
     setTimeout(() => {
       this.swiperInitFunc();
