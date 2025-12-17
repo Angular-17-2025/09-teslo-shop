@@ -2,7 +2,7 @@ import { UserInterface } from '@auth/interfaces/user.interface';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Gender, Product, ProductResponseInterface } from '@products/interfaces/product-response-interface';
-import { catchError, map, Observable, of, tap } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 interface Options {
@@ -81,7 +81,26 @@ export class ProductsService {
     return this.httpClient.get<Product>(`${environment.API_BASE_URL}/products/${id}`);
   }
 
-  updateProduct(productID: string, product: Partial<Product>): Observable<Product> {
+  updateProduct(productID: string, product: Partial<Product>, newImages: FileList): Observable<Product> {
+
+    if(newImages.length > 0){
+      return this.uploadImages(newImages).pipe(
+        map((newImagesIDs) => ({
+            ...product,
+            images: [ ...product.images ?? [], ...newImagesIDs ]
+          })
+        ),
+        // To link observables, first wait for uploadImages() and after execute updateRequest()
+        switchMap((productWithImages) =>
+          this.updateRequest(productID, productWithImages)
+        )
+      );
+    }
+
+    return this.updateRequest(productID, product);
+  }
+
+  updateRequest(productID: string, product: Partial<Product>): Observable<Product> {
     return this.httpClient.patch<Product>(`${environment.API_BASE_URL}/products/${productID}`, product).pipe(
       tap((product) => this.updateCache(product)),
       catchError((error) => {
@@ -101,6 +120,26 @@ export class ProductsService {
     this.productsCache.forEach((productResponse) => {
       productResponse.products = productResponse.products.map((oldProduct) => oldProduct.id == updatedProduct.id ? updatedProduct as any : oldProduct);
     });
+  }
+
+  uploadImages(images: FileList): Observable<string[]> {
+    if(!images) return of([]);
+
+    const requestForImage = Array.from(images).map((image) =>
+      this.uploadImage(image)
+    );
+
+    // To execute several Observables at time and wait for them
+    return forkJoin<string[]>(requestForImage);
+  }
+
+  uploadImage(image: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', image);
+
+    return this.httpClient.post<{fileName: string}>(`${environment.API_BASE_URL}/files/product`, formData).pipe(
+      map((resp) => resp.fileName)
+    );
   }
 
 }

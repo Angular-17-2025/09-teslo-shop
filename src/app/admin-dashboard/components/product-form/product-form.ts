@@ -20,7 +20,8 @@ export class Productform  implements OnInit{
   router = inject(Router);
   productsService = inject(ProductsService);
   wasSaved = signal<boolean>(false);
-  toastMsg = signal<string>("")
+  toastMsg = signal<string>("");
+  imagesFiles: FileList | undefined = undefined;
   tempImages = signal<string[]>([]);
   productImages = computed(() => {
     return [...this.product().images, ...this.tempImages()]
@@ -81,7 +82,7 @@ export class Productform  implements OnInit{
       });
 
     } else {
-      this.productsService.updateProduct(this.product()?.id, formData).subscribe({
+      this.productsService.updateProduct(this.product()?.id, formData, this.imagesFiles != undefined ? this.imagesFiles : [] as any).subscribe({
         next: () => this.launchToat("Product updated successfully"),
         error: (error) => console.log(error)
       });
@@ -92,6 +93,8 @@ export class Productform  implements OnInit{
   onImageInput(event: Event) {
     //Extract array of images Types as HTMLInputElement to access all properties
     const imagesSelected = (event.target as HTMLInputElement).files;
+
+    this.imagesFiles = imagesSelected ?? undefined;
 
     this.tempImages.set([]);
 
