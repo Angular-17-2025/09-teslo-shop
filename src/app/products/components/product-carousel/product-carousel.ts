@@ -32,47 +32,24 @@ export class ProductCarousel implements AfterViewInit, OnChanges{
 
     if(!this.swiperInstance) return;
 
-    this.swiperInstance.destroy(true, true);
-
-    //Re-init Swiper
     setTimeout(() => {
-      this.swiperInitFunc();
-    }, 300)
+      this.swiperInstance?.update();
+    }, 0)
   }
 
   ngAfterViewInit() {
-    this.swiperInitFunc();
-  }
+    const el = this.swiperDiv().nativeElement;
 
-  swiperInitFunc() {
-    const swiper = this.swiperDiv().nativeElement;
+    if(!el) return;
 
-    if(!swiper) return;
-
-    this.swiperInstance = new Swiper(swiper, {
+    this.swiperInstance = new Swiper(el, {
       // Optional parameters
       direction: 'horizontal',
-      loop: true,
-
-      modules: [
-        Navigation, Pagination
-      ],
-
-      // If we need pagination
-      pagination: {
-        el: '.swiper-pagination',
-      },
-
-      // Navigation arrows
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-
-      // And if we need scrollbar
-      scrollbar: {
-        el: '.swiper-scrollbar',
-      },
+      loop: false,
+      modules: [ Navigation, Pagination ],
+      pagination: { el: '.swiper-pagination' },
+      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+      scrollbar: { el: '.swiper-scrollbar' },
     });
   }
 

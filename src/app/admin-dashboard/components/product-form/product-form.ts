@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, OnInit, signal, ViewChild } from '@angular/core';
 import { Product } from '@products/interfaces/product-response-interface';
 import { ProductCarousel } from "@products/components/product-carousel/product-carousel";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +15,8 @@ import { Router, RouterLink } from "@angular/router";
 })
 export class Productform  implements OnInit{
 
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
   product = input.required<Product>();
   formBuilder = inject(FormBuilder);
   router = inject(Router);
@@ -23,8 +25,9 @@ export class Productform  implements OnInit{
   toastMsg = signal<string>("");
   imagesFiles: FileList | undefined = undefined;
   tempImages = signal<string[]>([]);
+  oldProductImages = signal<string[]>([]);
   productImages = computed(() => {
-    return [...this.product().images, ...this.tempImages()]
+    return [...this.oldProductImages(), ...this.tempImages()]
   });
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -42,6 +45,7 @@ export class Productform  implements OnInit{
   });
 
   ngOnInit(): void {
+    this.oldProductImages.set([...(this.product().images ?? [])]);
     this.setFormValues(this.product());
   }
 
@@ -83,8 +87,15 @@ export class Productform  implements OnInit{
 
     } else {
       this.productsService.updateProduct(this.product()?.id, formData, this.imagesFiles != undefined ? this.imagesFiles : [] as any).subscribe({
-        next: () => this.launchToat("Product updated successfully"),
-        error: (error) => console.log(error)
+        next: (productUpdated) => {
+          this.oldProductImages.set([...(productUpdated.images ?? [])]);
+          this.product().title = productUpdated.title;
+          this.imagesFiles = undefined;
+          this.tempImages.set([]);
+          this.fileInput.nativeElement.value = '';
+        },
+        error: (error) => console.log(error),
+        complete: () => this.launchToat("Product updated successfully")
       });
     }
 
