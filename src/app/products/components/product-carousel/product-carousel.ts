@@ -53,4 +53,17 @@ export class ProductCarousel implements AfterViewInit, OnChanges{
     });
   }
 
+  goTo(moveTo: number) {
+    // Wait for DOM render, then update swiper, then slide
+    requestAnimationFrame(() => {
+      this.swiperInstance?.update();
+
+      const allIndexs = (this.swiperInstance?.slides?.length ?? 1) - 1;
+      const indexMove = Math.max(0, Math.min(moveTo, allIndexs));
+      this.swiperInstance?.slideTo(indexMove, 500);
+    });
+  }
+
+
+
 }

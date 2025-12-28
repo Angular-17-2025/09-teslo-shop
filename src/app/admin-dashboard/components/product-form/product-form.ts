@@ -16,6 +16,7 @@ import { Router, RouterLink } from "@angular/router";
 export class Productform  implements OnInit{
 
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild(ProductCarousel) carousel!: ProductCarousel;
 
   product = input.required<Product>();
   formBuilder = inject(FormBuilder);
@@ -107,12 +108,21 @@ export class Productform  implements OnInit{
 
     this.imagesFiles = imagesSelected ?? undefined;
 
-    this.tempImages.set([]);
-
     // Convert each image in a URL to display in HTLM code
     this.tempImages.set(Array.from(imagesSelected ?? []).map((imageSelected) =>
       URL.createObjectURL(imageSelected)
     ));
+
+    // To see the first image added(When add several)
+    const firstPreviewIndex = this.oldProductImages().length;
+    // To see the last image added(When add several)
+    const lastPreviewIndex = this.oldProductImages().length + this.tempImages().length - 1;
+    // Wait a tick so @for renders the new slides, then move
+    setTimeout(() => {
+      this.carousel.goTo(firstPreviewIndex);
+      // this.carousel.goTo(lastPreviewIndex);
+    }, 0);
+
   }
 
   launchToat(msg:string) {
