@@ -83,7 +83,7 @@ export class Productform  implements OnInit{
       this.productsService.createProduct(formData).subscribe({
         next: (product) => this.router.navigateByUrl('/admin/product/' + product.id),
         error: (error) => console.log(error),
-        complete: () => this.launchToat("Product created successfully")
+        complete: () => this.launchToast("Product created successfully")
       });
 
     } else {
@@ -96,7 +96,7 @@ export class Productform  implements OnInit{
           this.fileInput.nativeElement.value = '';
         },
         error: (error) => console.log(error),
-        complete: () => this.launchToat("Product updated successfully")
+        complete: () => this.launchToast("Product updated successfully")
       });
     }
 
@@ -125,7 +125,7 @@ export class Productform  implements OnInit{
 
   }
 
-  launchToat(msg:string) {
+  launchToast(msg:string) {
     this.toastMsg.set(msg);
     this.wasSaved.set(true);
     setTimeout(() =>{
