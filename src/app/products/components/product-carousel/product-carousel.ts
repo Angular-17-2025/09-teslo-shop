@@ -35,7 +35,11 @@ export class ProductCarousel implements AfterViewInit, OnChanges{
 
     setTimeout(() => {
       this.swiperInstance?.update();
-    }, 0)
+      this.swiperInstance!.pagination?.render?.();
+      this.swiperInstance!.pagination?.update?.();
+      this.swiperInstance!.navigation?.update?.();
+      this.swiperInstance!.scrollbar?.updateSize?.();
+    }, 0);
   }
 
   ngAfterViewInit() {

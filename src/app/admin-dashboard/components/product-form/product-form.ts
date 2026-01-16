@@ -135,10 +135,17 @@ export class Productform  implements OnInit{
   }
 
   removeImage(imageRemoved: string) {
-    const oldImages = this.oldProductImages();
-    const imageToRemove = oldImages.indexOf(imageRemoved);
-    oldImages.splice(imageToRemove, 1);
-    this.oldProductImages.set([...oldImages]);
+    if(this.product().id == 'new') {
+      const tempImages = this.tempImages();
+      const imageToRemove = tempImages.indexOf(imageRemoved);
+      tempImages.splice(imageToRemove, 1);
+      this.tempImages.set([...tempImages]);
+    } else {
+      const oldImages = this.oldProductImages();
+      const imageToRemove = oldImages.indexOf(imageRemoved);
+      oldImages.splice(imageToRemove, 1);
+      this.oldProductImages.set([...oldImages]);
+    }
   }
 
 }

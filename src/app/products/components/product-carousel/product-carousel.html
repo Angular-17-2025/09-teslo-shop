@@ -1,6 +1,6 @@
 <div class="swiper" #swiperDiv>
   <div class="swiper-wrapper">
-    @for(image of images(); track $index) {
+    @for(image of images(); track image) {
       <div class="swiper-slide">
         <!-- <img class="product-img" [src]="image | productImagePipe | async" [alt]="title()" (click)="clickImage(image)"> -->
         <div class="relative w-full h-full">
@@ -29,12 +29,10 @@
       </div>
     }
   </div>
-  @if(images().length > 0) {
-    <div class="swiper-pagination"></div>
 
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
+  <div class="swiper-pagination"></div>
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-scrollbar"></div>
 
-    <div class="swiper-scrollbar"></div>
-  }
 </div>
