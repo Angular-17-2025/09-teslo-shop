@@ -87,7 +87,7 @@ export class Productform  implements OnInit{
       });
 
     } else {
-      this.productsService.updateProduct(this.product()?.id, formData, this.imagesFiles != undefined ? this.imagesFiles : [] as any).subscribe({
+      this.productsService.updateProduct(this.product()?.id, formData, this.imagesFiles != undefined ? this.imagesFiles : [] as any, this.oldProductImages()).subscribe({
         next: (productUpdated) => {
           this.oldProductImages.set([...(productUpdated.images ?? [])]);
           this.product().title = productUpdated.title;
@@ -132,6 +132,13 @@ export class Productform  implements OnInit{
       this.wasSaved.set(false);
       this.toastMsg.set('');
     }, 3000)
+  }
+
+  removeImage(imageRemoved: string) {
+    const oldImages = this.oldProductImages();
+    const imageToRemove = oldImages.indexOf(imageRemoved);
+    oldImages.splice(imageToRemove, 1);
+    this.oldProductImages.set([...oldImages]);
   }
 
 }

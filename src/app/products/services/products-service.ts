@@ -81,9 +81,11 @@ export class ProductsService {
     return this.httpClient.get<Product>(`${environment.API_BASE_URL}/products/${id}`);
   }
 
-  updateProduct(productID: string, product: Partial<Product>, newImages: FileList): Observable<Product> {
+  updateProduct(productID: string, product: Partial<Product>, newImages: FileList, productImages: string[]): Observable<Product> {
 
-    if(newImages.length > 0){
+    product.images = productImages;
+
+    if(newImages.length > 0) {
       return this.uploadImages(newImages).pipe(
         map((newImagesIDs) => ({
             ...product,

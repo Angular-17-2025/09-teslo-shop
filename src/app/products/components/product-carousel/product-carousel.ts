@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, OnChanges, SimpleChanges, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, OnChanges, output, signal, SimpleChanges, viewChild } from '@angular/core';
 import Swiper from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -24,6 +24,7 @@ export class ProductCarousel implements AfterViewInit, OnChanges{
   images = input.required<string[]>();
   swiperDiv = viewChild.required<ElementRef>('swiperDiv');
   swiperInstance: Swiper | undefined = undefined;
+  imageRemoved = output<string>();
 
   ngOnChanges(changes: SimpleChanges): void {
 
@@ -64,6 +65,8 @@ export class ProductCarousel implements AfterViewInit, OnChanges{
     });
   }
 
-
+  removeImage(image: string) {
+    this.imageRemoved.emit(image);
+  }
 
 }

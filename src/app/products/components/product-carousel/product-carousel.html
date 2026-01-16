@@ -2,7 +2,26 @@
   <div class="swiper-wrapper">
     @for(image of images(); track $index) {
       <div class="swiper-slide">
-        <img [src]="image | productImagePipe | async" [alt]="title()">
+        <!-- <img class="product-img" [src]="image | productImagePipe | async" [alt]="title()" (click)="clickImage(image)"> -->
+        <div class="relative w-full h-full">
+          <!-- top-half hover zone -->
+          <div class="absolute top-0 left-0 w-full h-1/3 z-10 group">
+            <button
+              class="absolute top-2 right-2 z-20 btn btn-sm btn-circle btn-error opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+              type="button"
+              (click)="removeImage(image)"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+
+          <img
+            class="w-full h-full object-cover select-none"
+            [src]="image | productImagePipe | async"
+            [alt]="title()"
+          />
+        </div>
+
       </div>
     } @empty{
       <div class="swiper-slide">
