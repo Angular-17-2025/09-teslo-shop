@@ -135,17 +135,28 @@ export class Productform  implements OnInit{
   }
 
   removeImage(imageRemoved: string) {
-    if(this.product().id == 'new') {
-      const tempImages = this.tempImages();
-      const imageToRemove = tempImages.indexOf(imageRemoved);
-      tempImages.splice(imageToRemove, 1);
-      this.tempImages.set([...tempImages]);
-    } else {
-      const oldImages = this.oldProductImages();
-      const imageToRemove = oldImages.indexOf(imageRemoved);
-      oldImages.splice(imageToRemove, 1);
-      this.oldProductImages.set([...oldImages]);
+    if(this.product().id == 'new') { //Create new product
+      this.removeImageFromTempImages(imageRemoved);
+    } else { // Edit product
+      if(this.oldProductImages().length > 0) { // When the curren product has images
+        const oldImages = this.oldProductImages();
+        const imageToRemove = oldImages.indexOf(imageRemoved);
+        if(imageToRemove === -1 || 0) { // When the image is not found in old images, is on temp images
+          return this.removeImageFromTempImages(imageRemoved);
+        }
+        oldImages.splice(imageToRemove, 1);
+        this.oldProductImages.set([...oldImages]);
+      } else {
+        this.removeImageFromTempImages(imageRemoved);
+      }
     }
+  }
+
+  removeImageFromTempImages(imageRemoved: string) {
+    const tempImages = this.tempImages();
+    const imageToRemove = tempImages.indexOf(imageRemoved);
+    tempImages.splice(imageToRemove, 1);
+    this.tempImages.set([...tempImages]);
   }
 
 }
