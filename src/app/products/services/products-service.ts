@@ -81,7 +81,7 @@ export class ProductsService {
     return this.httpClient.get<Product>(`${environment.API_BASE_URL}/products/${id}`);
   }
 
-  updateProduct(productID: string, product: Partial<Product>, newImages: FileList, productImages: string[]): Observable<Product> {
+  updateProduct(productID: string, product: Partial<Product>, newImages: File[], productImages: string[]): Observable<Product> {
 
     product.images = productImages;
 
@@ -112,7 +112,23 @@ export class ProductsService {
     );
   }
 
-  createProduct(product: Partial<Product>): Observable<Product> {
+  createProduct(product: Partial<Product>, productImagesFiles: File[]): Observable<Product> {
+
+    if(productImagesFiles.length > 0) {
+
+      return this.uploadImages(productImagesFiles).pipe(
+        map((images) => ({
+            ...product,
+            images: [ ...images ]
+          })
+        ),
+        switchMap((productWithImages) =>  this.createProductRequest(productWithImages))
+      );
+    }
+    return this.createProductRequest(product);
+  }
+
+  createProductRequest(product: Partial<Product>): Observable<Product> {
     return this.httpClient.post<Product>(`${environment.API_BASE_URL}/products`, product).pipe(
       tap(() => this.productsCache.clear())
     );
@@ -124,7 +140,7 @@ export class ProductsService {
     });
   }
 
-  uploadImages(images: FileList): Observable<string[]> {
+  uploadImages(images: File[]): Observable<string[]> {
     if(!images) return of([]);
 
     const requestForImage = Array.from(images).map((image) =>

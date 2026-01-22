@@ -24,11 +24,11 @@ export class Productform  implements OnInit{
   productsService = inject(ProductsService);
   wasSaved = signal<boolean>(false);
   toastMsg = signal<string>("");
-  imagesFiles: FileList | undefined = undefined;
-  tempImages = signal<string[]>([]);
+  imagesFiles = signal<File[]>([]);
+  tempImagesPreviews = signal<{url: string; file: File} []>([]);
   oldProductImages = signal<string[]>([]);
   productImages = computed(() => {
-    return [...this.oldProductImages(), ...this.tempImages()]
+    return [...this.oldProductImages(), ...this.tempImagesPreviews().map(preview => preview.url)]
   });
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
@@ -80,21 +80,19 @@ export class Productform  implements OnInit{
     };
 
     if(this.product().id == 'new') {
-      this.productsService.createProduct(formData).subscribe({
-        next: (product) => this.router.navigateByUrl('/admin/product/' + product.id),
+      this.productsService.createProduct(formData, this.imagesFiles()).subscribe({
+        next: (product) => {
+          this.resetValues(product);
+          this.product().id = product.id;
+          this.router.navigateByUrl('/admin/product/' + product.id);
+        },
         error: (error) => console.log(error),
         complete: () => this.launchToast("Product created successfully")
       });
 
     } else {
-      this.productsService.updateProduct(this.product()?.id, formData, this.imagesFiles != undefined ? this.imagesFiles : [] as any, this.oldProductImages()).subscribe({
-        next: (productUpdated) => {
-          this.oldProductImages.set([...(productUpdated.images ?? [])]);
-          this.product().title = productUpdated.title;
-          this.imagesFiles = undefined;
-          this.tempImages.set([]);
-          this.fileInput.nativeElement.value = '';
-        },
+      this.productsService.updateProduct(this.product()?.id, formData, this.imagesFiles(), this.oldProductImages()).subscribe({
+        next: (productUpdated) => this.resetValues(productUpdated),
         error: (error) => console.log(error),
         complete: () => this.launchToast("Product updated successfully")
       });
@@ -102,27 +100,36 @@ export class Productform  implements OnInit{
 
   }
 
+  resetValues(product: Product){
+    this.oldProductImages.set([...(product.images ?? [])]);
+    this.product().title = product.title;
+    this.imagesFiles.set([]);
+    this.tempImagesPreviews.set([]);
+    this.fileInput.nativeElement.value = '';
+  }
+
   onImageInput(event: Event) {
     //Extract array of images Types as HTMLInputElement to access all properties
-    const imagesSelected = (event.target as HTMLInputElement).files;
+    const selectedFiles = Array.from((event.target as HTMLInputElement).files ?? []);
 
-    this.imagesFiles = imagesSelected ?? undefined;
+    //Build the tempImagesPreviews() structure
+    const previews = selectedFiles.map(file => ({
+      file,
+      url: URL.createObjectURL(file)
+    }));
 
-    // Convert each image in a URL to display in HTLM code
-    this.tempImages.set(Array.from(imagesSelected ?? []).map((imageSelected) =>
-      URL.createObjectURL(imageSelected)
-    ));
+    // Add the new values
+    this.imagesFiles.set([...selectedFiles]);
+    this.tempImagesPreviews.set([...previews]);
 
     // To see the first image added(When add several)
     const firstPreviewIndex = this.oldProductImages().length;
-    // To see the last image added(When add several)
-    const lastPreviewIndex = this.oldProductImages().length + this.tempImages().length - 1;
+
     // Wait a tick so @for renders the new slides, then move
     setTimeout(() => {
       this.carousel.goTo(firstPreviewIndex);
       // this.carousel.goTo(lastPreviewIndex);
     }, 0);
-
   }
 
   launchToast(msg:string) {
@@ -135,28 +142,27 @@ export class Productform  implements OnInit{
   }
 
   removeImage(imageRemoved: string) {
-    if(this.product().id == 'new') { //Create new product
-      this.removeImageFromTempImages(imageRemoved);
-    } else { // Edit product
-      if(this.oldProductImages().length > 0) { // When the curren product has images
-        const oldImages = this.oldProductImages();
-        const imageToRemove = oldImages.indexOf(imageRemoved);
-        if(imageToRemove === -1 || 0) { // When the image is not found in old images, is on temp images
-          return this.removeImageFromTempImages(imageRemoved);
-        }
-        oldImages.splice(imageToRemove, 1);
-        this.oldProductImages.set([...oldImages]);
-      } else {
-        this.removeImageFromTempImages(imageRemoved);
-      }
+    // if it's an old image (already in DB)
+    if (this.oldProductImages().includes(imageRemoved)) {
+      this.oldProductImages.set(this.oldProductImages().filter(oldImage => oldImage !== imageRemoved));
+      return;
     }
-  }
 
-  removeImageFromTempImages(imageRemoved: string) {
-    const tempImages = this.tempImages();
-    const imageToRemove = tempImages.indexOf(imageRemoved);
-    tempImages.splice(imageToRemove, 1);
-    this.tempImages.set([...tempImages]);
+    // else it's a preview url => remove preview + its file
+    const previews = this.tempImagesPreviews();
+    const idx = previews.findIndex(preview => preview.url === imageRemoved);
+    if (idx === -1) return;
+
+    // revoke blob url to free memory
+    URL.revokeObjectURL(previews[idx].url);
+
+    const newPreviews = previews.filter((_, index) => index !== idx);
+    this.tempImagesPreviews.set(newPreviews);
+
+    // remove the matching file from imagesFiles as well
+    const files = this.imagesFiles();
+    const fileToRemove = previews[idx].file;
+    this.imagesFiles.set(files.filter(file => file !== fileToRemove));
   }
 
 }
