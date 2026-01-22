@@ -14,4 +14,8 @@ export class ProductsTable {
 
   products = input.required<Product[]>();
 
+  deleteProduct(product: Product) {
+    console.log(product);
+  }
+
 }

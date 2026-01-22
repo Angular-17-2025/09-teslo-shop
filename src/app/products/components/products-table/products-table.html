@@ -32,7 +32,9 @@
                 </div>
               </div>
               <div>
-                <a [routerLink]="['/admin/product', product.id]" class="font-bold hover:text-accent transition-colors duration-200">{{product.title}}</a>
+                <div class="tooltip" data-tip="See product details">
+                  <a [routerLink]="['/admin/product', product.id]" class="font-bold hover:text-accent transition-colors duration-200">{{product.title}}</a>
+                </div>
                 <div class="text-sm opacity-50">{{product.sizes.join(', ')}}</div>
               </div>
             </div>
@@ -48,10 +50,16 @@
             }
           </td>
           <th>
-            <a [routerLink]="['/admin/product', product.id]"
-                class="btn btn-ghost text-accent btn-xs">
-              Details
-            </a>
+            <div class="tooltip" data-tip="Edit product">
+              <a [routerLink]="['/admin/product', product.id]" class="btn btn-ghost text-accent btn-md">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </a>
+            </div>
+            <div class="tooltip" data-tip="Delete product">
+              <a (click)="deleteProduct(product)" class="btn btn-ghost text-accent btn-md">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </div>
           </th>
         </tr>
       }
