@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, input, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Product } from '@products/interfaces/product-response-interface';
 import { ProductCarousel } from "@products/components/product-carousel/product-carousel";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -14,7 +14,7 @@ import { Toast } from "src/app/shared/components/toast/toast";
   templateUrl: './product-form.html',
   styles: ``
 })
-export class Productform  implements OnInit{
+export class Productform  implements OnInit, OnDestroy {
 
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild(ProductCarousel) carousel!: ProductCarousel;
@@ -50,6 +50,11 @@ export class Productform  implements OnInit{
   ngOnInit(): void {
     this.oldProductImages.set([...(this.product().images ?? [])]);
     this.setFormValues(this.product());
+  }
+
+  ngOnDestroy(): void {
+    this.productForm.reset();
+    this.product().title = "";
   }
 
   setFormValues(product: Partial<Product>) {
