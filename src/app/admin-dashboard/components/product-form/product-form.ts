@@ -6,10 +6,11 @@ import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabel } from 'src/app/shared/components/form-error-label/form-error-label';
 import { ProductsService } from '@products/services/products-service';
 import { Router, RouterLink } from "@angular/router";
+import { Toast } from "src/app/shared/components/toast/toast";
 
 @Component({
   selector: 'app-product-form',
-  imports: [ProductCarousel, ReactiveFormsModule, FormErrorLabel, RouterLink],
+  imports: [ProductCarousel, ReactiveFormsModule, FormErrorLabel, RouterLink, Toast],
   templateUrl: './product-form.html',
   styles: ``
 })
@@ -22,8 +23,6 @@ export class Productform  implements OnInit{
   formBuilder = inject(FormBuilder);
   router = inject(Router);
   productsService = inject(ProductsService);
-  wasSaved = signal<boolean>(false);
-  toastMsg = signal<string>("");
   imagesFiles = signal<File[]>([]);
   tempImagesPreviews = signal<{url: string; file: File} []>([]);
   oldProductImages = signal<string[]>([]);
@@ -32,6 +31,9 @@ export class Productform  implements OnInit{
   });
 
   sizesMap = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+  toastMessage = signal<string>("");
+  toastType = signal<string>("");
 
   productForm = this.formBuilder.group({
     title: ['', Validators.required],
@@ -86,21 +88,35 @@ export class Productform  implements OnInit{
           this.product().id = product.id;
           this.router.navigateByUrl('/admin/product/' + product.id);
         },
-        error: (error) => console.log(error),
-        complete: () => this.launchToast("Product created successfully")
+        error: (error) => {
+          console.log(error);
+          this.toastMessage.set(error.message);
+          this.toastType.set("error");
+        },
+        complete: () => {
+          this.toastMessage.set("Product created successfully");
+          this.toastType.set("success");
+        }
       });
 
     } else {
       this.productsService.updateProduct(this.product()?.id, formData, this.imagesFiles(), this.oldProductImages()).subscribe({
         next: (productUpdated) => this.resetValues(productUpdated),
-        error: (error) => console.log(error),
-        complete: () => this.launchToast("Product updated successfully")
+        error: (error) => {
+          console.log(error);
+          this.toastMessage.set(error.message);
+          this.toastType.set("error");
+        },
+        complete: () => {
+          this.toastMessage.set("Product updated successfully");
+          this.toastType.set("success");
+        }
       });
     }
 
   }
 
-  resetValues(product: Product){
+  resetValues(product: Product) {
     this.oldProductImages.set([...(product.images ?? [])]);
     this.product().title = product.title;
     this.imagesFiles.set([]);
@@ -132,15 +148,6 @@ export class Productform  implements OnInit{
     }, 0);
   }
 
-  launchToast(msg:string) {
-    this.toastMsg.set(msg);
-    this.wasSaved.set(true);
-    setTimeout(() =>{
-      this.wasSaved.set(false);
-      this.toastMsg.set('');
-    }, 3000)
-  }
-
   removeImage(imageRemoved: string) {
     // if it's an old image (already in DB)
     if (this.oldProductImages().includes(imageRemoved)) {
@@ -163,6 +170,11 @@ export class Productform  implements OnInit{
     const files = this.imagesFiles();
     const fileToRemove = previews[idx].file;
     this.imagesFiles.set(files.filter(file => file !== fileToRemove));
+  }
+
+  clearToast() {
+    this.toastMessage.set("");
+    this.toastType.set("");
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component, effect, input, signal } from '@angular/core';
+import { Component, effect, input, signal, output } from '@angular/core';
 
 @Component({
   selector: 'app-toast',
@@ -9,9 +9,10 @@ import { Component, effect, input, signal } from '@angular/core';
 export class Toast {
 
   type = input.required<string | null>();
-  message = input.required<any | null>();
+  message = input.required<string | null>();
   display = signal<boolean>(false);
   private timer: ReturnType<typeof setTimeout> | null = null;
+  clearToast = output();
 
   ngOnDestroy() {
     if (this.timer) clearTimeout(this.timer);
@@ -31,6 +32,7 @@ export class Toast {
     this.timer = setTimeout(() => {
       this.display.set(false);
       this.timer = null;
+      this.clearToast.emit();
     }, 5000);
   }
 
