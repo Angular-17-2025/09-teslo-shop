@@ -160,4 +160,8 @@ export class ProductsService {
     );
   }
 
+  deleteProduct(productID: string): Observable<Boolean> {
+    return this.httpClient.delete<boolean>(`${environment.API_BASE_URL}/products/${productID}`);
+  }
+
 }

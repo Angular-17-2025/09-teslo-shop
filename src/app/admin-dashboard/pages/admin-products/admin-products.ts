@@ -60,4 +60,9 @@ export class AdminProducts {
     )
   });
 
+  reloadProducts() {
+    this.productsService.productsCache.clear();
+    this.productsResource.reload();
+  }
+
 }

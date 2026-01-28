@@ -22,10 +22,8 @@
     </div>
   }
 
-
-
   @if (products()!.count > 0) {
-    <app-products-table [products]="products()!.products"></app-products-table>
+    <app-products-table [products]="products()!.products" (reloadProducts)="reloadProducts()"></app-products-table>
   } @else {
     <span class="text-accent">No products</span>
   }

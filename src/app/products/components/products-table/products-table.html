@@ -56,7 +56,7 @@
               </a>
             </div>
             <div class="tooltip" data-tip="Delete product">
-              <a (click)="deleteProduct(product)" class="btn btn-ghost text-accent btn-md">
+              <a (click)="openDeleteModal(product)" class="btn btn-ghost text-accent btn-md">
                 <i class="fa-solid fa-trash"></i>
               </a>
             </div>
@@ -76,3 +76,19 @@
     </tfoot>
   </table>
 </div>
+
+<app-toast [type]="toastType()" [message]="toastMessage()"></app-toast>
+
+<dialog #deletModal class="modal">
+  <div class="modal-box">
+    <h3 class="text-lg font-bold">Delete product</h3>
+    <p class="py-4">Are you sure to delete this product: <strong>{{product()?.title}}</strong>?</p>
+    <div class="modal-action">
+      <button class="btn" (click)="confirmDelete.set(true)">Confirm</button>
+      <button class="btn" (click)="closeDeleteModal()">Close</button>
+      <!-- if there is a button in form, it will close the modal -->
+      <!-- <form method="dialog"> -->
+      <!-- </form> -->
+    </div>
+  </div>
+</dialog>
