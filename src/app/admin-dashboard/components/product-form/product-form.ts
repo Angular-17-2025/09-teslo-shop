@@ -55,6 +55,7 @@ export class Productform  implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.productForm.reset();
     this.product().title = "";
+    this.product().id = "new";
   }
 
   setFormValues(product: Partial<Product>) {
