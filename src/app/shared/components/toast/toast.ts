@@ -1,8 +1,9 @@
+import { NgClass } from '@angular/common';
 import { Component, effect, input, signal, output } from '@angular/core';
 
 @Component({
   selector: 'app-toast',
-  imports: [],
+  imports: [NgClass],
   templateUrl: './toast.html',
   styles: ``
 })
