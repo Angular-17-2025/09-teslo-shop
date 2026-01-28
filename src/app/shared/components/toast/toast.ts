@@ -8,8 +8,8 @@ import { Component, effect, input, signal, output } from '@angular/core';
 })
 export class Toast {
 
-  type = input.required<string | null>();
-  message = input.required<string | null>();
+  type = input.required<string>();
+  message = input.required<string>();
   display = signal<boolean>(false);
   private timer: ReturnType<typeof setTimeout> | null = null;
   clearToast = output();

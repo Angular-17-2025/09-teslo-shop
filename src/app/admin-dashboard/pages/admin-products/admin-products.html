@@ -23,7 +23,7 @@
   }
 
   @if (products()!.count > 0) {
-    <app-products-table [products]="products()!.products" (reloadProducts)="reloadProducts()"></app-products-table>
+    <app-products-table [products]="products()!.products" (reloadProducts)="reloadProducts($event)"></app-products-table>
   } @else {
     <span class="text-accent">No products</span>
   }
@@ -31,3 +31,5 @@
     <app-pagination [totalPages]="products()!.pages" [currentPage]="paginationService.pageNumberFromURL()"></app-pagination>
   }
 }
+
+<app-toast [type]="toastType()" [message]="toastMessage()" (clearToast)="clearToast()"></app-toast>

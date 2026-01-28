@@ -8,10 +8,11 @@ import { PaginationService } from 'src/app/shared/pagination/pagination-service'
 import { Pagination } from "src/app/shared/pagination/pagination";
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { Toast } from "src/app/shared/components/toast/toast";
 
 @Component({
   selector: 'app-admin-products',
-  imports: [ProductsTable, Pagination, FormsModule, RouterLink],
+  imports: [ProductsTable, Pagination, FormsModule, RouterLink, Toast],
   templateUrl: './admin-products.html',
   styles: ``
 })
@@ -22,6 +23,9 @@ export class AdminProducts {
   productsPerPage = signal<number>(10);
   products = signal<ProductResponseInterface | null>(null);
   router = inject(Router);
+
+  toastType = signal<string>("");
+  toastMessage = signal<string>("");
 
   changeProductsPerPage = effect(() => {
     const newLimit = this.productsPerPage();
@@ -60,9 +64,16 @@ export class AdminProducts {
     )
   });
 
-  reloadProducts() {
+  reloadProducts(event: any) {
+    this.toastMessage.set(event.message);
+    this.toastType.set(event.type);
     this.productsService.productsCache.clear();
     this.productsResource.reload();
+  }
+
+  clearToast() {
+    this.toastMessage.set("");
+    this.toastType.set("");
   }
 
 }
