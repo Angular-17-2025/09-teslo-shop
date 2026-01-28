@@ -77,7 +77,7 @@ export class AuthServices {
     this._user.set(user);
     this._authStatus.set('authenticated');
     this._token.set(token);
-    const expiresInMs = 60 * 60 * 500; //30mins
+    const expiresInMs = 60 * 60 * 1000; //60mins
     const expTime = Date.now() + expiresInMs;
 
     localStorage.setItem('token', token);
