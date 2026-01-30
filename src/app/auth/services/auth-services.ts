@@ -4,7 +4,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UserInterface } from '@auth/interfaces/user.interface';
 import { catchError, map, Observable, of, shareReplay } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 

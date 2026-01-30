@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Gender, Product, ProductResponseInterface } from '@products/interfaces/product-response-interface';
 import { catchError, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 
 interface Options {
   limit?: number,
