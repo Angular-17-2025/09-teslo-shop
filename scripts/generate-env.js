@@ -17,7 +17,7 @@ if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
 const contents = `export const environment = {
   production: true,
-  apiBaseUrl: ${JSON.stringify(apiBaseUrl)},
+  API_BASE_URL: ${JSON.stringify(apiBaseUrl)},
 };
 `;
 
